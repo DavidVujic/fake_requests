@@ -3,36 +3,39 @@ import requests
 import json
 from xml.etree import ElementTree
 
+original_get = requests.get
+original_post = requests.post
+original_delete = requests.delete
 
-class FakeRequests:
 
-    def __init__(self):
-        self.responses = []
-        self.original_get = requests.get
-        self.original_post = requests.post
-        self._setup_requests()
-
-    def _setup_requests(self):
-        def fake_call(url, *args, **kwargs):
-            data, status_code = self.responses.pop(0)
+def fake_request_maker():
+    def setup_fake_requests():
+        def make_fake_call(url, *args, **kwargs):
+            data, status_code = responses.pop(0)
             return FakeHttpResponse(data, status_code)
 
-        requests.get = fake_call
-        requests.post = fake_call
-        requests.delete = fake_call
+        requests.get = make_fake_call
+        requests.post = make_fake_call
+        requests.delete = make_fake_call
 
-    def add(self, expected_response):
+    def add(expected_response):
         if isinstance(expected_response, tuple):
             to_append = expected_response
         else:
             to_append = (expected_response, 200)
 
-        self.responses.append(to_append)
+        responses.append(to_append)
 
-    def reset(self):
-        requests.get = self.original_get
-        requests.post = self.original_post
-        self.responses = []
+    responses = []
+    setup_fake_requests()
+
+    return add
+
+
+def reset():
+    requests.get = original_get
+    requests.post = original_post
+    requests.delete = original_delete
 
 
 class FakeHttpResponse:
