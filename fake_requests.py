@@ -1,7 +1,4 @@
-import os
 import requests
-import json
-from xml.etree import ElementTree
 
 original_get = requests.get
 original_post = requests.post
