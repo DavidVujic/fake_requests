@@ -9,13 +9,8 @@ _responses = []
 
 
 def fake_request_maker():
-    def add(expected_response):
-        if isinstance(expected_response, tuple):
-            to_append = expected_response
-        else:
-            to_append = (expected_response, 200)
-
-        _responses.append(to_append)
+    def add(expected_response, status_code=200):
+        _responses.append((expected_response, status_code))
 
     requests.get = _fake_call
     requests.post = _fake_call
