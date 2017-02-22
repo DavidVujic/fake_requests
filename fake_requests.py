@@ -4,7 +4,7 @@ _responses = []
 _is_initialized = False
 
 
-def add_fake_response(expected_response, status_code=200):
+def fake_response(expected_response, status_code=200):
     if not _is_initialized:
         init()
     _responses.append((expected_response, status_code))
