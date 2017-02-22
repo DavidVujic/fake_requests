@@ -1,41 +1,36 @@
 import requests
 
-_original_get = None
-_original_post = None
-_original_delete = None
-_original_session = None
-
 _responses = []
+_is_initialized = False
 
 
-def fake_request_maker(req_lib=None):
-    def add(expected_response, status_code=200):
-        _responses.append((expected_response, status_code))
+def add_fake_response(expected_response, status_code=200):
+    if not _is_initialized:
+        init()
+    _responses.append((expected_response, status_code))
 
+
+def init(req_lib=None):
     if not req_lib:
         req_lib = requests
-
-    _keep_original_functions(req_lib)
 
     req_lib.get = _fake_call
     req_lib.post = _fake_call
     req_lib.delete = _fake_call
     req_lib.Session = FakeSession
 
-    return add
-
 
 def reset(req_lib=None):
+    global _responses
+    global _is_initialized
+
     if not req_lib:
         req_lib = requests
 
-    req_lib.get = _original_get
-    req_lib.post = _original_post
-    req_lib.delete = _original_delete
-    req_lib.Session = _original_session
+    reload(req_lib)
 
-    global _responses
     _responses = []
+    _is_initialized = False
 
 
 class FakeSession:
@@ -63,11 +58,3 @@ class FakeHttpResponse:
 def _fake_call(url, *args, **kwargs):
     data, status_code = _responses.pop(0)
     return FakeHttpResponse(data, status_code)
-
-
-def _keep_original_functions(req_lib):
-    global _original_get, _original_post, _original_delete, _original_session
-    _original_get = req_lib.get
-    _original_post = req_lib.post
-    _original_delete = req_lib.delete
-    _original_session = req_lib.Session

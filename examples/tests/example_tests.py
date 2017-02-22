@@ -1,14 +1,9 @@
 from nose.tools import assert_equal
 
 from examples.src import example
-from fake_requests import fake_request_maker, reset
+from fake_requests import add_fake_response, reset
 
-fake_response = None
-
-
-def setup():
-    global fake_response
-    fake_response = fake_request_maker()
+_fake_response = None
 
 
 def teardown():
@@ -16,10 +11,11 @@ def teardown():
 
 
 def test_download_stats():
-    global fake_response
-
-    fake_response({'message': 'hello world'})
+    add_fake_response({'message': 'hello world'})
+    add_fake_response({'message': 'goodbye world'})
 
     result = example.get_data('my-fake-url')
+    result2 = example.get_data('my-fake-url-2')
 
     assert_equal(result, 'hello world')
+    assert_equal(result2, 'goodbye world')
