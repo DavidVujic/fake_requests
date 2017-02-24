@@ -1,3 +1,5 @@
+from functools import partial
+
 import requests
 
 
@@ -13,7 +15,7 @@ class FakeRequests():
         req_lib.get = self.fake_call
         req_lib.post = self.fake_call
         req_lib.delete = self.fake_call
-        req_lib.Session = FakeSession
+        req_lib.Session = partial(FakeSession, self)
 
         self.is_initialized = True
 
