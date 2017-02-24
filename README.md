@@ -5,15 +5,17 @@ The fake_requests module uses monkey patching to make fake http requests. This i
 
 #### Example usage
 ```python
-from fake_requests import fake_response, reset
+from fake_requests import FakeRequests
 from parser import fake_data_from
+
+fake = FakeRequests()
 
 def test_my_example_unit_test():
   # arrange: add one or more fake responses
-  fake_response('{"data": "this is a fake response"}')
+  fake.response('{"data": "this is a fake response"}')
 
   # or load a file with fake data
-  fake_response(fake_data_from('fake.json'))
+  fake.response(fake_data_from('fake.json'))
 
   # act: run the code to be tested
   result = my_module.run_some_code()
@@ -22,6 +24,6 @@ def test_my_example_unit_test():
   assert_equal(result.get('data'), "data that my_module has parsed")
 
   # teardown
-  reset()
+  fake.reset()
 
 ```

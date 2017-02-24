@@ -1,18 +1,18 @@
 from nose.tools import assert_equal
 
 from examples.src import example
-from fake_requests import fake_response, reset
+from fake_requests import FakeRequests
 
-_fake_response = None
+fake = FakeRequests()
 
 
 def teardown():
-    reset()
+    fake.reset()
 
 
 def test_download_stats():
-    fake_response({'message': 'hello world'})
-    fake_response({'message': 'goodbye world'})
+    fake.response({'message': 'hello world'})
+    fake.response({'message': 'goodbye world'})
 
     result = example.get_data('my-fake-url')
     result2 = example.get_data('my-fake-url-2')
